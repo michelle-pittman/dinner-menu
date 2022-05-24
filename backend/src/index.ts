@@ -9,7 +9,15 @@ type Meal = {
     name: string,
 }
 
-const starts = async () => {
+// Require the framework and instantiate it
+
+// ESM
+import Fastify from 'fastify'
+const fastify = Fastify({
+    logger: true
+})
+
+fastify.get('/meals', async (request, reply) => {
 
     const client = new Client({
         database: "dinner_time",
@@ -20,28 +28,10 @@ const starts = async () => {
     })
     await client.connect()
     const res = await client.query<Meal>('SELECT * FROM meals')
-    res.rows.forEach(meal => console.log(meal.name))
     await client.end()
 
-}
-
-
-starts();
-
-// Require the framework and instantiate it
-
-// ESM
-import Fastify from 'fastify'
-const fastify = Fastify({
-    logger: true
-})
-
-fastify.get('/meals', async (request, reply) => {
     return {
-        meals: [{
-            name: "corn",
-            id: 2
-        }]
+        meals: res.rows
     }
 })
 
