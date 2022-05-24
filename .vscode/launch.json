@@ -1,0 +1,11 @@
+{
+    "type": "node",
+    "request": "launch",
+    "name": "Build Project",
+    "program": "${workspaceFolder}/backend/src/index.ts",
+    "preLaunchTask": "npm: build",
+    "sourceMaps": true,
+    "smartStep": true,
+    "internalConsoleOptions": "openOnSessionStart",
+    "outFiles": ["${workspaceFolder}/backend/dist/**/*.js"]
+}

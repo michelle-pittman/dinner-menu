@@ -9,6 +9,11 @@ type Meal = {
     name: string,
 }
 
+type Date = {
+    date: Date,
+    name: string
+}
+
 // Require the framework and instantiate it
 
 // ESM
@@ -33,6 +38,29 @@ fastify.get('/meals', async (request, reply) => {
     return {
         meals: res.rows
     }
+    
+})
+
+fastify.get('/dates', async (request, reply) => {
+
+    const client = new Client({
+        database: "dinner_time",
+        host: "localhost",
+        user: "postgres",
+        password: "password",
+        port: 5432,
+    })
+    await client.connect()
+    const res = await client.query<Date>(`SELECT d.date, m.name 
+    FROM dinners AS d
+    JOIN meals AS m
+        ON d.meal_id = m.id
+    WHERE EXTRACT(MONTH FROM d.date) = 5 
+    AND EXTRACT(YEAR FROM d.date) = 2022;`)
+    return {
+        meals: res.rows
+    }
+    
 })
 
 const start = async () => {
