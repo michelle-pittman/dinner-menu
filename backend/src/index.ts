@@ -13,6 +13,10 @@ type Date = {
     date: Date,
     name: string
 }
+type GetDatesQuerystring = {
+    year: number,
+    month: number
+}
 
 // Require the framework and instantiate it
 
@@ -38,10 +42,10 @@ fastify.get('/meals', async (request, reply) => {
     return {
         meals: res.rows
     }
-    
+
 })
 
-fastify.get('/dates', async (request, reply) => {
+fastify.get<{Querystring: GetDatesQuerystring,}>('/dates', async (request, reply) => {
 
     const client = new Client({
         database: "dinner_time",
@@ -55,12 +59,13 @@ fastify.get('/dates', async (request, reply) => {
     FROM dinners AS d
     JOIN meals AS m
         ON d.meal_id = m.id
-    WHERE EXTRACT(MONTH FROM d.date) = 5 
-    AND EXTRACT(YEAR FROM d.date) = 2022;`)
+    WHERE EXTRACT(MONTH FROM d.date) = ${request.query.month} 
+    AND EXTRACT(YEAR FROM d.date) = ${request.query.year};`)
     return {
+
         meals: res.rows
     }
-    
+
 })
 
 const start = async () => {
