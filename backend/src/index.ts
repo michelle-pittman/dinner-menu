@@ -54,13 +54,17 @@ fastify.get<{Querystring: GetDatesQuerystring,}>('/dates', async (request, reply
         password: "password",
         port: 5432,
     })
-    await client.connect()
-    const res = await client.query<Date>(`SELECT d.date, m.name 
+
+    const text = `SELECT d.date, m.name 
     FROM dinners AS d
     JOIN meals AS m
         ON d.meal_id = m.id
-    WHERE EXTRACT(MONTH FROM d.date) = ${request.query.month} 
-    AND EXTRACT(YEAR FROM d.date) = ${request.query.year};`)
+    WHERE EXTRACT(MONTH FROM d.date) = $1 
+    AND EXTRACT(YEAR FROM d.date) = $2;`
+    const values = [request.query.month, request.query.year]
+
+    await client.connect()
+    const res = await client.query<Date>(text, values)
     return {
 
         meals: res.rows
