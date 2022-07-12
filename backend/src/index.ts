@@ -17,6 +17,9 @@ type GetDatesQuerystring = {
     year: number,
     month: number
 }
+type AddMealBody = {
+    name: string
+}
 
 // Require the framework and instantiate it
 
@@ -45,7 +48,7 @@ fastify.get('/meals', async (request, reply) => {
 
 })
 
-fastify.get<{Querystring: GetDatesQuerystring,}>('/dates', async (request, reply) => {
+fastify.get<{ Querystring: GetDatesQuerystring, }>('/dates', async (request) => {
 
     const client = new Client({
         database: "dinner_time",
@@ -69,6 +72,28 @@ fastify.get<{Querystring: GetDatesQuerystring,}>('/dates', async (request, reply
 
         meals: res.rows
     }
+
+})
+
+fastify.post<{ Body: AddMealBody, }>('/meals', async (request, reply) => {
+
+    const client = new Client({
+        database: "dinner_time",
+        host: "localhost",
+        user: "postgres",
+        password: "password",
+        port: 5432,
+    })
+
+    const text = 'INSERT INTO meals (name) VALUES ($1);'
+
+    const values = [request.body.name]
+
+    await client.connect()
+    await client.query(text, values)
+
+    reply
+    .code(204)
 
 })
 
