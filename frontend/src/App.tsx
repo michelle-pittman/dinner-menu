@@ -11,29 +11,20 @@ type Meal = {
 }
 
 function App() {
-
   const [clicks, setClicks] = useState(0);
-  const [clicks2, setClicks2] = useState(27);
-  const [meals, setMeals] = useState<Meal[]>([{id: 1, name: "spaget"},{id: 2, name:"chicken"}]);
-  
-  console.log("beep boop")
+  const [meals, setMeals] = useState<Meal[]>([]);
 
-  useEffect(() => {
-
-   console.log("hi")
-
-  }, [clicks]);
+  useEffect(() => { fetch("http://localhost:3000/meals").then(_=>_.json()).then(response => setMeals(response.meals)) }, []);
 
   return (
     <div className="App">
       <header className="App-header">
-      <p>{meals.join("")}</p>
+        <p>{meals.map(_ => _.name).join()}</p>
         <Heading text='Dinner Menu' />
         <DateSquare number={clicks} text="spaget" />
         <DateSquare number={1 + 1} text="" />
         <DateSquare number={1 + 2} text="corn" />
-        <Button text='Button' onClick={() => setClicks(clicks + 1)} />
-        <Button text='Button' onClick={() => setClicks2(clicks2 + 1)} />
+        <Button text='Button' onClick={() => setClicks(clicks + 1)} />+
         <Button text='Reset' onClick={() => setClicks(0)} />
       </header>
     </div>

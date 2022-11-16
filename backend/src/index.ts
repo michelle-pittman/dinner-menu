@@ -1,8 +1,7 @@
-import { Client } from 'pg'; // SAME AS: const { Client } = require('pg');
-// also the same as 
-// import pg from 'pg'
-// const Client = pg.Client
-// destructuring
+import pg from "pg";
+const { Client } = pg;
+
+import cors from '@fastify/cors'
 
 type Meal = {
     id: number,
@@ -21,7 +20,7 @@ type AddMealBody = {
     name: string
 }
 type AddMealToDateBody = {
-    date: Date, 
+    date: Date,
     mealId: number
 }
 
@@ -33,10 +32,15 @@ const fastify = Fastify({
     logger: true
 })
 
+await fastify.register(cors, {
+
+})
+
+
 fastify.get('/meals', async (request, reply) => {
 
     const client = new Client({
-        database: "dinner_time",
+        database: "postgres",
         host: "localhost",
         user: "postgres",
         password: "password",
@@ -55,7 +59,7 @@ fastify.get('/meals', async (request, reply) => {
 fastify.get<{ Querystring: GetDatesQuerystring, }>('/dates', async (request) => {
 
     const client = new Client({
-        database: "dinner_time",
+        database: "postgres",
         host: "localhost",
         user: "postgres",
         password: "password",
@@ -82,7 +86,7 @@ fastify.get<{ Querystring: GetDatesQuerystring, }>('/dates', async (request) => 
 fastify.post<{ Body: AddMealBody, }>('/meals', async (request, reply) => {
 
     const client = new Client({
-        database: "dinner_time",
+        database: "postgres",
         host: "localhost",
         user: "postgres",
         password: "password",
@@ -97,14 +101,14 @@ fastify.post<{ Body: AddMealBody, }>('/meals', async (request, reply) => {
     await client.query(text, values)
 
     reply
-    .code(204)
+        .code(204)
 
 })
 
 fastify.post<{ Body: AddMealToDateBody, }>('/dates', async (request, reply) => {
 
     const client = new Client({
-        database: "dinner_time",
+        database: "postgres",
         host: "localhost",
         user: "postgres",
         password: "password",
@@ -119,17 +123,8 @@ fastify.post<{ Body: AddMealToDateBody, }>('/dates', async (request, reply) => {
     await client.query(text, values)
 
     reply
-    .code(204)
+        .code(204)
 
 })
 
-const start = async () => {
-    try {
-        await fastify.listen(3000)
-    } catch (err) {
-        fastify.log.error(err)
-        process.exit(1)
-    }
-}
-
-start()
+await fastify.listen({ port: 3000 })
